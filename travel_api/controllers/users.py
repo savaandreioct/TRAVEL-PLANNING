@@ -30,6 +30,7 @@ def user():
     body = request.json
     username = body.get("username")
     password = body.get("password")
+    print(body)
 
     if username is None or password is None:
         return "Username or password not provided fmm de fronted", 404
@@ -54,3 +55,33 @@ def users():
     print(nodes.data())
 
     return results
+
+
+@app.post("/trips")
+def create_trip():
+    body = request.json
+    body.update({"uuid": str(uuid.uuid4())})
+    username = body.get("username")
+    with api.db.driver.session() as session:
+        _trip = session.write_transaction(transactions.create_trip, body)
+
+    with api.db.driver.session() as session:
+        _user = session.read_transaction(transactions.get_user, username)
+
+    user_data = _user.data().get("n")
+
+    with api.db.driver.session() as session:
+        _ = session.write_transaction(
+            transactions.add_trip_to_user, body.get("uuid"), user_data.get("uuid")
+        )
+
+    return body, 200
+
+
+@app.get("/trips/<username>")
+def get_user_trips(username):
+    with api.db.driver.session() as session:
+        user_trips = session.read_transaction(transactions.get_user_trips, username)
+
+    response = [record["n"]._properties for record in user_trips]
+    return response

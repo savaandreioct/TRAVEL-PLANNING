@@ -42,4 +42,8 @@ class ApiConfig:
         # self.app.app.json_encoder = FlaskJSONEncoder
         # CORS(self.app.app)
         # self.app.app.debug = True
-        self.db = Neo4jConfig("bolt://localhost:7687", "neo4j", "Velocloud456")
+        self.db = Neo4jConfig(
+            "neo4j+s://4dfb58fc.databases.neo4j.io",
+            "neo4j",
+            "3plt7Uk_9GsAXmzUiYd06rqETV7LzYDAUnwOTu_An6Q",
+        )
