@@ -1,0 +1,50 @@
+swagger: '2.0'
+info:
+  title: Travel API
+  description: |-
+  version: 1.0.0
+host: serverRoot
+basePath: /tmf-api/serviceInventory/v4
+schemes:
+  - https
+consumes:
+  - application/json;charset=utf-8
+produces:
+  - application/json;charset=utf-8
+tags:
+  - name: user
+paths:
+  /user:
+    get:
+      operationId: listService
+      summary: List or find Service objects
+      description: This operation list or find Service entities
+      tags:
+        - service
+      parameters:
+        - name: fields
+          description: Comma-separated properties to be provided in response
+          required: false
+          in: query
+          type: string
+        - name: offset
+          description: Requested index for start of resources to be provided in response
+          required: false
+          in: query
+          type: integer
+        - name: limit
+          description: Requested number of resources to be provided in response
+          required: false
+          in: query
+          type: integer
+      responses:
+        '200':
+          description: Success
+          headers:
+            X-Result-Count:
+              description: Actual number of items returned in the response body
+              type: integer
+            X-Total-Count:
+              description: Total number of items matching criteria
+              type: integer
+
