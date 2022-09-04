@@ -1,0 +1,148 @@
+[
+    {
+        "baggage": {
+            "clothes": {
+                "120120": {
+                    "denim_shorts": "220",
+                    "t-shirt": "100"
+                },
+                "1201211": {
+                    "jeans": "250",
+                    "socks": "30",
+                    "t-shirt": "100",
+                    "underwear": "25"
+                },
+                "121112": {
+                    "blouse": "150",
+                    "jeans": "250",
+                    "socks": "30",
+                    "underwear": "25"
+                },
+                "1212": {
+                    "blouse": "150",
+                    "jeans": "250",
+                    "socks": "30",
+                    "underwear": "25"
+                }
+            },
+            "clothes_common": {
+                "flip_flops": "110",
+                "hat": "60",
+                "hoodie": "600",
+                "jacket": "600",
+                "pijamas_1": "150",
+                "raincoat": "500"
+            },
+            "electronics": {
+                "battery": "200",
+                "cable": "5",
+                "charger": "80",
+                "headphones": "50",
+                "phone": "200"
+            },
+            "essentials": {
+                "ID_card": "10",
+                "antiperspirant": "200",
+                "brush": "150",
+                "cards": "4",
+                "passport": "10",
+                "pills": "20",
+                "shampoo": "300",
+                "shower_gel": "300",
+                "tissues": "20",
+                "tooth_brush": "70",
+                "toothpaste": "100",
+                "visa": "10"
+            },
+            "recommended": {
+                "cosmetic_cream": "500",
+                "eReader": "100",
+                "gopro": "120",
+                "makeup": "500",
+                "sd_card": "2",
+                "sun_protection": "100",
+                "umbrella": "300"
+            },
+            "total_weight": "7.006",
+            "uuid": "2180b7e8-8c25-4fc2-99e3-dea2fff6b050"
+        },
+        "firstName": "Cosmin",
+        "gender": "female",
+        "lastName": "Petre",
+        "uuid": "2180b7e8-8c25-4fc2-99e3-dea2fff6b050",
+        "weight": "10"
+    },
+    {
+        "baggage": {
+            "clothes": {
+                "120120": {
+                    "shorts": "100",
+                    "socks": "30",
+                    "t-shirt": "100",
+                    "underwear": "25"
+                },
+                "1201211": {
+                    "jeans": "250",
+                    "socks": "30",
+                    "t-shirt": "100",
+                    "underwear": "25"
+                },
+                "121112": {
+                    "blouse": "150",
+                    "jeans": "250",
+                    "socks": "30",
+                    "underwear": "25"
+                },
+                "1212": {
+                    "blouse": "150",
+                    "jeans": "250",
+                    "socks": "30",
+                    "underwear": "25"
+                }
+            },
+            "clothes_common": {
+                "flip_flops": "110",
+                "hat": "60",
+                "hoodie": "600",
+                "jacket": "600",
+                "pijamas_1": "150",
+                "raincoat": "500"
+            },
+            "electronics": {
+                "battery": "200",
+                "cable": "5",
+                "charger": "80",
+                "headphones": "50",
+                "phone": "200"
+            },
+            "essentials": {
+                "ID_card": "10",
+                "antiperspirant": "200",
+                "brush": "150",
+                "cards": "4",
+                "passport": "10",
+                "pills": "20",
+                "shampoo": "300",
+                "shower_gel": "300",
+                "tissues": "20",
+                "tooth_brush": "70",
+                "toothpaste": "100",
+                "visa": "10"
+            },
+            "recommended": {
+                "eReader": "100",
+                "gopro": "120",
+                "sd_card": "2",
+                "sun_protection": "100",
+                "umbrella": "300"
+            },
+            "total_weight": "5.941",
+            "uuid": "d6dbd840-f19d-4206-82e5-27a7ca929183"
+        },
+        "firstName": "Andrei",
+        "gender": "male",
+        "lastName": "Sava",
+        "uuid": "d6dbd840-f19d-4206-82e5-27a7ca929183",
+        "weight": "10"
+    }
+]

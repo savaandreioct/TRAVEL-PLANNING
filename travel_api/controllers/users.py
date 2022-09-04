@@ -1,12 +1,23 @@
-from http import HTTPStatus
-from flask import Flask, request
-from travel_api.config import ApiConfig
-from db import transactions
 import uuid
+from http import HTTPStatus
+
+from db import transactions
+from flask import Flask, request
+from flask_cors import CORS, cross_origin
+from travel_api.config import ApiConfig
+from travel_api.util import get_token
+from flatten_dict import flatten, unflatten
+from flatten_dict.reducers import make_reducer
+from flatten_dict.splitters import make_splitter
+
+from travel_api.baggage_generator import process_baggage
+
 
 api = ApiConfig.i("travel_api")
 
 app = Flask(__name__)
+cors = CORS(app)
+app.config["CORS_HEADERS"] = "Content-Type"
 
 
 @app.post("/register")
@@ -47,41 +58,138 @@ def user():
 
 @app.get("/users")
 def users():
-    q1 = "MATCH (n) return n"
     with api.db.driver.session() as session:
-        nodes = session.run(q1)
+        users = session.read_transaction(transactions.get_users)
 
-    results = [record for record in nodes.data()]
-    print(nodes.data())
+    response = [record["n"]._properties for record in users]
+    return response
 
-    return results
+
+@app.get("/users/me")
+def users_me():
+    token = get_token(request.headers.get("Authorization"))
+    if token is not None:
+        with api.db.driver.session() as session:
+            user = session.read_transaction(transactions.get_user_by_token, token)
+
+        response = user.data().get("n")
+        return response
+    return "Token not provided", 400
 
 
 @app.post("/trips")
 def create_trip():
     body = request.json
     body.update({"uuid": str(uuid.uuid4())})
-    username = body.get("username")
+    visitors = body.pop("visitors")
+    weather = body.pop("weather")
+    trip = body
+    print(trip.get("uuid"))
     with api.db.driver.session() as session:
-        _trip = session.write_transaction(transactions.create_trip, body)
+        _trip = session.write_transaction(
+            transactions.create_trip,
+            trip,
+        )
 
     with api.db.driver.session() as session:
-        _user = session.read_transaction(transactions.get_user, username)
+        _user = session.read_transaction(transactions.get_user, body.get("username"))
 
     user_data = _user.data().get("n")
 
     with api.db.driver.session() as session:
         _ = session.write_transaction(
-            transactions.add_trip_to_user, body.get("uuid"), user_data.get("uuid")
+            transactions.add_trip_to_user, trip.get("uuid"), user_data.get("uuid")
+        )
+    for visitor in visitors:
+        visitor.update({"uuid": str(uuid.uuid4())})
+        with api.db.driver.session() as session:
+            _visitor = session.write_transaction(transactions.create_visitor, visitor)
+        # visitor_data = _visitor.get("s")._properties
+        with api.db.driver.session() as session:
+            _ = session.write_transaction(
+                transactions.add_visitors_to_trip,
+                trip.get("uuid"),
+                visitor.get("uuid"),
+            )
+        baggage = process_baggage(visitor, weather, trip)
+        baggage.update({"uuid": visitor.get("uuid")})
+        baggage_flatten = flatten(baggage, make_reducer("."))
+        with api.db.driver.session() as session:
+            _baggage = session.write_transaction(
+                transactions.create_baggage, baggage_flatten
+            )
+        with api.db.driver.session() as session:
+            _ = session.write_transaction(
+                transactions.add_baggage_to_visitor,
+                visitor.get("uuid"),
+                baggage.get("uuid"),
+            )
+
+    with api.db.driver.session() as session:
+        period = {"uuid": trip.get("uuid")}
+        _period = session.write_transaction(transactions.create_period, period)
+
+    with api.db.driver.session() as session:
+        _ = session.write_transaction(
+            transactions.add_period_to_trip, trip.get("uuid"), trip.get("uuid")
         )
 
+    for day in weather:
+        day.update({"uuid": str(uuid.uuid4()), "no": weather.index(day)})
+        with api.db.driver.session() as session:
+            _day = session.write_transaction(transactions.create_day, day)
+        day_data = _day.get("s")._properties
+        with api.db.driver.session() as session:
+            _ = session.write_transaction(
+                transactions.add_days_to_period,
+                trip.get("uuid"),
+                day_data.get("uuid"),
+            )
     return body, 200
 
 
-@app.get("/trips/<username>")
-def get_user_trips(username):
+@app.get("/users/<uuid>/trips")
+def get_user_trips(uuid):
     with api.db.driver.session() as session:
-        user_trips = session.read_transaction(transactions.get_user_trips, username)
+        user_trips = session.read_transaction(transactions.get_user_trips, uuid)
 
     response = [record["n"]._properties for record in user_trips]
     return response
+
+
+@app.get("/trips/<uuid>")
+def get_trip_info(uuid):
+    with api.db.driver.session() as session:
+        user_trips = session.read_transaction(transactions.get_trip_visitors, uuid)
+
+    response = [record["n"]._properties for record in user_trips]
+    for item in response:
+        with api.db.driver.session() as session:
+            visitor_baggage = session.read_transaction(
+                transactions.get_visitor_baggage, item.get("uuid")
+            )
+            visitor_baggage = visitor_baggage[0]["t"]._properties
+            visitor_baggage = unflatten(visitor_baggage, make_splitter("."))
+            item.update({"baggage": visitor_baggage})
+
+    with api.db.driver.session() as session:
+        _trip = session.read_transaction(transactions.get_trip_info, uuid)
+
+    trip = _trip.data().get("n")
+
+    with api.db.driver.session() as session:
+        _weather = session.read_transaction(transactions.get_trip_weather, uuid)
+    weather = [record["d"]._properties for record in _weather]
+    final_responde = {"visitors": response, "weather": weather}
+    final_responde.update(trip)
+
+    return final_responde
+
+
+@app.patch("/users")
+def patch_user():
+    body = request.json
+
+    with api.db.driver.session() as session:
+        _ = session.write_transaction(transactions.register, body)
+    return body
