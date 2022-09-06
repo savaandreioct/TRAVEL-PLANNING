@@ -84,12 +84,23 @@ def process_baggage(visitor, weather, trip):
 
     baggage.get("clothes_common").update({"flip_flops": "110"})
 
+    if trip.get("pool") in ["true", "True", True]:
+        baggage.get("clothes_common").update({"swim_suit": "90"})
+
+    if trip.get("beach") in ["true", "True", True]:
+        baggage.get("clothes_common").update({"swim_suit": "90"})
+        baggage.get("recommanded").update({"beach_bag": "300"})
+
+    if trip.get("mountain") in ["true", "True", True]:
+        baggage.get("clothes_common").update({"boots": "90"})
+
     if visitor.get("gender") == "F":
         baggage.get("recommended").update({"makeup": "500"})
         baggage.get("recommended").update({"cosmetic_cream": "500"})
 
-    for i in range(len(weather) // 3):
+    for i in range((len(weather) // 3) + 1):
         baggage.get("clothes_common").update({f"pijamas_{i+1}": "150"})
+        baggage.get("clothes_common").update({f"shoes_{i+1}": "750"})
 
     if len(weather) > 7:
         baggage.get("recommended").update({"laptop": "2000"})
@@ -120,13 +131,13 @@ def process_baggage(visitor, weather, trip):
             baggage.get("clothes").get(f"{day.get('date')}").update({"blouse": "150"})
         if int(day.get("temp")) in range(5, 14):
             baggage.get("clothes").get(f"{day.get('date')}").update({"jeans": "250"})
-            baggage.get("clothes_common").update({"jacket": "600"})
             baggage.get("clothes").get(f"{day.get('date')}").update({"blouse": "150"})
+            baggage.get("clothes_common").update({"jacket": "600"})
             baggage.get("clothes_common").update({"hoodie": "600"})
         if int(day.get("temp")) < 5:
-            baggage.get("clothes_common").update({"boots": "1500"})
             baggage.get("clothes").get(f"{day.get('date')}").update({"jeans": "250"})
             baggage.get("clothes").get(f"{day.get('date')}").update({"blouse": "150"})
+            baggage.get("clothes_common").update({"boots": "1500"})
             baggage.get("clothes_common").update({"gloves": "100"})
             baggage.get("clothes_common").update({"hat": "60"})
             baggage.get("clothes_common").update({"winter_jacket": "1000"})
