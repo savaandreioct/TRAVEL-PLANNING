@@ -89,7 +89,7 @@ def process_baggage(visitor, weather, trip):
 
     if trip.get("beach") in ["true", "True", True]:
         baggage.get("clothes_common").update({"swim_suit": "90"})
-        baggage.get("recommanded").update({"beach_bag": "300"})
+        baggage.get("recommended").update({"beach_bag": "300"})
 
     if trip.get("mountain") in ["true", "True", True]:
         baggage.get("clothes_common").update({"boots": "90"})
@@ -143,10 +143,10 @@ def process_baggage(visitor, weather, trip):
             baggage.get("clothes_common").update({"winter_jacket": "1000"})
         if int(day.get("temp")) < -5:
             baggage.get("clothes").get(f"{day.get('date')}").update({"leggings": "100"})
-        if int(day.get("precipitation")) > 200 and int(day.get("temp")) > 0:
+        if int(day.get("precipitation")) > 2 and int(day.get("temp")) > 0:
             baggage.get("recommended").update({"umbrella": "300"})
             baggage.get("clothes_common").update({"raincoat": "500"})
-        if int(day.get("wind")) > 100 and int(day.get("temp")) in range(5, 14):
+        if int(day.get("wind")) > 10 and int(day.get("temp")) in range(5, 14):
             baggage.get("clothes").get(f"{day.get('date')}").update(
                 {"wind_jacket": "100"}
             )

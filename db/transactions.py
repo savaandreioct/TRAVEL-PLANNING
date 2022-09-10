@@ -48,8 +48,8 @@ def get_user(rx, username):
 def create_trip(tx, obj):
     query = """
         MERGE (s:Trips {uuid: $uuid})
-        ON CREATE SET s=$props
-        ON MATCH SET s=$props
+        ON CREATE SET s+=$props
+        ON MATCH SET s+=$props
         """
     result = tx.run(query, uuid=obj["uuid"], props=obj)
     return result.single()
@@ -58,8 +58,8 @@ def create_trip(tx, obj):
 def create_visitor(tx, obj):
     query = """
         MERGE (s:Visitors {uuid: $uuid})
-        ON CREATE SET s=$props
-        ON MATCH SET s=$props
+        ON CREATE SET s+=$props
+        ON MATCH SET s+=$props
         RETURN s
         """
     result = tx.run(query, uuid=obj["uuid"], props=obj)
@@ -91,8 +91,8 @@ def create_day(tx, obj):
 def create_baggage(tx, obj):
     query = """
         MERGE (s:Baggages {uuid: $uuid})
-        ON CREATE SET s=$props
-        ON MATCH SET s=$props
+        ON CREATE SET s+=$props
+        ON MATCH SET s+=$props
         RETURN s
         """
     result = tx.run(query, uuid=obj["uuid"], props=obj)

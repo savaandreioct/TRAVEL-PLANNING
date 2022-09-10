@@ -81,6 +81,7 @@ def users_me():
 def create_trip():
     body = request.json
     body.update({"uuid": str(uuid.uuid4()), "bagDone": False})
+    print(body)
     visitors = body.pop("visitors")
     weather = body.pop("weather")
     trip = body
@@ -149,9 +150,10 @@ def create_trip():
 
 
 @app.patch("/trips/<uuid>")
-def update_trip():
+def update_trip(uuid):
     body = request.json
     visitors = body.pop("visitors")
+    weather = body.pop("weather")
     trip = body
     print(trip.get("uuid"))
     with api.db.driver.session() as session:
@@ -165,20 +167,10 @@ def update_trip():
 
     user_data = _user.data().get("n")
 
-    with api.db.driver.session() as session:
-        _ = session.write_transaction(
-            transactions.add_trip_to_user, trip.get("uuid"), user_data.get("uuid")
-        )
     for visitor in visitors:
-        visitor.update({"uuid": str(uuid.uuid4())})
+        visitor.pop("baggage")
         with api.db.driver.session() as session:
             _visitor = session.write_transaction(transactions.create_visitor, visitor)
-        with api.db.driver.session() as session:
-            _ = session.write_transaction(
-                transactions.add_visitors_to_trip,
-                trip.get("uuid"),
-                visitor.get("uuid"),
-            )
 
     return body, 200
 
